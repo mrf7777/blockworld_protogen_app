@@ -10,7 +10,7 @@ using namespace protogen;
 class ProtogenAppTest : public protogen::IProtogenApp {
 public:
     std::string name() const override {
-        return "Protogen App Test";
+        return "Blockworld";
     }
 
     std::string id() const override {
@@ -18,7 +18,7 @@ public:
     }
 
     std::string description() const override {
-        return "This is a demo protogen app that is a simple template for education.";
+        return "An imitation of multiplayer Minecraft in 2D on a Protogen display.";
     }
 
     bool sanityCheck([[maybe_unused]] std::string& errorMessage) const override {
