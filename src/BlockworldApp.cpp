@@ -7,7 +7,7 @@
 
 using namespace protogen;
 
-class ProtogenAppTest : public protogen::IProtogenApp {
+class BlockworldApp : public protogen::IProtogenApp {
 public:
     std::string name() const override {
         return "Blockworld";
@@ -73,7 +73,7 @@ public:
     }
 
     float framerate() const override {
-        return 10;
+        return 15;
     }
 
     std::vector<Resolution> supportedResolutions(const Resolution& device_resolution) const override {
@@ -92,7 +92,7 @@ private:
 // Interface to create and destroy you app.
 // This is how your app is created and consumed as a library.
 extern "C" IProtogenApp * create_app() {
-    return new ProtogenAppTest();
+    return new BlockworldApp();
 }
 
 extern "C" void destroy_app(IProtogenApp * app) {

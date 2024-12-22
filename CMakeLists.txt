@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.16)
-project(protogen_app_test)
+project(blockworld_protogen_app)
 
 set(PROTOGEN_APP_ID "blockworld")
 
@@ -7,7 +7,7 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 set(PROTOGEN_APP_SOURCES
-    "${PROJECT_SOURCE_DIR}/src/ProtogenAppTest.cpp"
+    "${PROJECT_SOURCE_DIR}/src/BlockworldApp.cpp"
     "${PROJECT_SOURCE_DIR}/src/minecraft.cpp"
     "${PROJECT_SOURCE_DIR}/src/minecraft_state.cpp"
     "${PROJECT_SOURCE_DIR}/src/MinecraftDrawer.cpp"
