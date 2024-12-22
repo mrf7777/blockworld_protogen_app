@@ -1,6 +1,9 @@
 #include <protogen/IProtogenApp.hpp>
 #include <protogen/IProportionProvider.hpp>
 #include <protogen/Resolution.hpp>
+#include <blockworld/minecraft.h>
+#include <blockworld/MinecraftDrawer.h>
+#include <blockworld/minecraft_state.h>
 #include <cmake_vars.h>
 
 #include <cmath>
@@ -33,10 +36,6 @@ public:
         using httplib::Request, httplib::Response;
         return Endpoints{
             {
-                Endpoint{HttpMethod::Get, "/home"},
-                [](const Request&, Response& res){ res.set_content("This is the homepage.", "text/html"); }
-            },
-            {
                 Endpoint{HttpMethod::Get, "/hello"},
                 [](const Request&, Response& res){ res.set_content("Hello!", "text/plain"); }
             },
@@ -48,7 +47,7 @@ public:
     }
 
     std::string homePage() const override {
-        return "/static/index.html";
+        return "/static/minecraft.html";
     }
 
     std::string staticFilesDirectory() const override {
