@@ -13,6 +13,13 @@ using namespace blockworld;
 
 class BlockworldApp : public IProtogenApp {
 public:
+    BlockworldApp()
+        : IProtogenApp(),
+        m_active(false),
+        m_state{},
+        m_deviceResolution{0, 0}
+    {}
+
     std::string name() const override {
         return "Blockworld";
     }
@@ -40,7 +47,7 @@ public:
                 Endpoint{HttpMethod::Put, "/world/generate"},
                 [this](const Request& req, Response&) {
                     const std::size_t seed = std::hash<std::string>{}(req.body);
-                    const auto world = BlockMatrixGenerator(32, 128).generate(seed);
+                    const auto world = BlockMatrixGenerator(m_deviceResolution.height(), m_deviceResolution.width()).generate(seed);
                     m_state.blockMatrix() = world;
                 }
             },
@@ -142,6 +149,7 @@ public:
     }
 
     std::vector<Resolution> supportedResolutions(const Resolution& device_resolution) const override {
+        m_deviceResolution = device_resolution;
         return {device_resolution};
     }
 
@@ -151,6 +159,7 @@ public:
 private:
     bool m_active;
     mutable MinecraftState m_state;
+    mutable Resolution m_deviceResolution;
     MinecraftDrawer m_drawer;
 };
 

@@ -66,7 +66,7 @@ void MinecraftPlayerState::correctCursor() {
 }
 
 MinecraftState::MinecraftState()
-    : m_blockMatrix(32, 128),
+    : m_blockMatrix(5, 5),
     m_blockColorProfile(defaultBlockColorProfile),
     m_players()
 {}
@@ -87,7 +87,7 @@ bool MinecraftState::addNewPlayer(const PlayerId& id) {
         // and return boolean? Is'nt this going away soon?
         m_players.insert(std::make_pair(
             id,
-            MinecraftPlayerState(0, number_players, 32, 128)
+            MinecraftPlayerState(0, number_players, blockMatrix().rows(), blockMatrix().cols())
         ));
         return true;
     }
