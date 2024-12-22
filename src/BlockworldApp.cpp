@@ -9,8 +9,9 @@
 #include <cmath>
 
 using namespace protogen;
+using namespace blockworld;
 
-class BlockworldApp : public protogen::IProtogenApp {
+class BlockworldApp : public IProtogenApp {
 public:
     std::string name() const override {
         return "Blockworld";
@@ -36,12 +37,82 @@ public:
         using httplib::Request, httplib::Response;
         return Endpoints{
             {
-                Endpoint{HttpMethod::Get, "/hello"},
-                [](const Request&, Response& res){ res.set_content("Hello!", "text/plain"); }
+                Endpoint{HttpMethod::Put, "/world/generate"},
+                [this](const Request& req, Response&) {
+                    const std::size_t seed = std::hash<std::string>{}(req.body);
+                    const auto world = BlockMatrixGenerator(32, 128).generate(seed);
+                    m_state.blockMatrix() = world;
+                }
             },
             {
-                Endpoint{HttpMethod::Get, "/hello/website"},
-                [](const Request&, Response& res){ res.set_content("Hello, website!", "text/plain"); }
+                Endpoint{HttpMethod::Get, "/players"},
+                [this](const Request&, Response& res){
+                    res.set_content(m_state.playersSeparatedByNewline(), "text/plain");
+                }
+            },
+            {
+                Endpoint{HttpMethod::Put, "/players/:player"},
+                [this](const Request& req, Response&){
+                    m_state.addNewPlayer(req.path_params.at("player"));
+                }
+            },
+            {
+                Endpoint{HttpMethod::Delete, "/players/:player"},
+                [this](const Request& req, Response&){
+                    m_state.removePlayer(req.path_params.at("player"));
+                }
+            },
+            {
+                Endpoint{HttpMethod::Post, "/players/:player/move"},
+                [this](const Request& req, Response&){
+                    const auto player_id = req.path_params.at("player");
+                    const auto move_direction = MinecraftPlayerState::stringToCursorDirection(req.body);
+                    m_state.accessPlayer(player_id, [move_direction](MinecraftPlayerState& player_state){
+                        player_state.moveCursor(move_direction);
+                    });
+                }
+            },
+            {
+                Endpoint{HttpMethod::Post, "/players/:player/place_block"},
+                [this](const Request& req, Response&){
+                    const auto player_id = req.path_params.at("player");
+                    MinecraftPlayerState::CursorPos player_cursor;
+                    Block player_block;
+                    m_state.accessPlayer(player_id, [&player_cursor, &player_block](MinecraftPlayerState& player_state){
+                        player_cursor = player_state.cursor();
+                        player_block = player_state.selectedBlock();
+                    });
+                    m_state.blockMatrix().set(
+                        player_cursor.first,
+                        player_cursor.second,
+                        player_block
+                    );
+                }
+            },
+            {
+                Endpoint{HttpMethod::Put, "/players/:player/block"},
+                [this](const Request& req, Response&){
+                    const auto player_id = req.path_params.at("player");
+                    const auto block = Block::fromString(req.body);
+                    m_state.accessPlayer(player_id, [block](MinecraftPlayerState& player_state){
+                        player_state.setSelectedBlock(block);
+                    });
+                }
+            },
+            {
+                Endpoint{HttpMethod::Get, "/blocks"},
+                [this](const Request&, Response& res){
+                    res.set_content(Block::allBlocksSeparatedByNewline(), "text/plain");
+                }
+            },
+            {
+                Endpoint{HttpMethod::Get, "/blocks/:block/color"},
+                [this](const Request& req, Response& res){
+                    const auto block = Block::fromString(req.path_params.at("block"));
+                    const auto block_color = m_state.blockColorProfile()(block);
+                    const auto color_hex = colorHexCodeFromColor(block_color);
+                    res.set_content(color_hex, "text/plain");
+                }
             },
         };
     }
@@ -63,12 +134,7 @@ public:
     }
 
     void render(ICanvas& canvas) const override {
-        if(m_mouthProvider) {
-            const double mouth_open_proportion = m_mouthProvider->proportion();
-            canvas.fill(0, std::floor(std::lerp(0.0, 255.0, mouth_open_proportion)), 0);
-        } else {
-            canvas.fill(127, 0, 0);
-        }
+        m_drawer.draw(canvas, m_state);
     }
 
     float framerate() const override {
@@ -79,13 +145,13 @@ public:
         return {device_resolution};
     }
 
-    void setMouthProportionProvider(std::shared_ptr<IProportionProvider> provider) {
-        m_mouthProvider = provider;
+    void setMouthProportionProvider([[maybe_unused]] std::shared_ptr<IProportionProvider> provider) {
     }
 
 private:
-    std::shared_ptr<IProportionProvider> m_mouthProvider;
     bool m_active;
+    mutable MinecraftState m_state;
+    MinecraftDrawer m_drawer;
 };
 
 // Interface to create and destroy you app.

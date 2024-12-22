@@ -1,8 +1,3 @@
-let enable_button = document.getElementById("enable-button")
-enable_button.addEventListener("click", () => {
-	startMinecraft()
-})
-
 let seedInput = document.getElementById("seed-input")
 document.getElementById("generate-button").addEventListener("click", () => {
     generateWorld(seedInput.value)
