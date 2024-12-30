@@ -40,6 +40,9 @@ public:
         m_active = active;
     }
 
+    void receiveResourcesDirectory([[maybe_unused]] const std::string& resourcesDirectory) override {
+    }
+
     Endpoints serverEndpoints() const override {
         using httplib::Request, httplib::Response;
         return Endpoints{
