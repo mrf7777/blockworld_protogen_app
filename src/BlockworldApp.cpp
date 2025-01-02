@@ -151,9 +151,12 @@ public:
         return 15;
     }
 
-    std::vector<Resolution> supportedResolutions(const Resolution& device_resolution) const override {
+    void receiveDeviceResolution(const Resolution& device_resolution) override {
         m_deviceResolution = device_resolution;
-        return {device_resolution};
+    }
+
+    std::vector<Resolution> supportedResolutions() const override {
+        return {m_deviceResolution};
     }
 
     void setMouthProportionProvider([[maybe_unused]] std::shared_ptr<IProportionProvider> provider) {
