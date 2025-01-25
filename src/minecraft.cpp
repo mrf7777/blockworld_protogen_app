@@ -19,7 +19,7 @@ Block Block::fromString(const std::string& s) {
     else if(s == "dirt")
         return Block(DirtBlock());
     else if(s == "wood")
-        return Block(DirtBlock());
+        return Block(WoodBlock());
     else if(s == "grass")
         return Block(GrassBlock());
     else if(s == "sand")
@@ -45,13 +45,13 @@ std::string Block::allBlocksSeparatedByNewline() {
 
 std::tuple<uint8_t, uint8_t, uint8_t> defaultBlockColorProfile(const Block& b) {
     return std::visit(overloaded{
-        [](const AirBlock){ return std::tuple{0, 0, 0}; },
-        [](const StoneBlock){ return std::tuple{127, 127, 127}; },
-        [](const DirtBlock){ return std::tuple{166, 81, 25}; },
-        [](const WoodBlock){ return std::tuple{255, 169, 41}; },
-        [](const GrassBlock){ return std::tuple{62, 191, 48}; },
-        [](const SandBlock){ return std::tuple{245, 255, 105}; },
-        [](const WaterBlock){ return std::tuple{87, 163, 222}; },
+        [](const AirBlock){ return std::tuple<uint8_t, uint8_t, uint8_t>{0, 0, 0}; },
+        [](const StoneBlock){ return std::tuple<uint8_t, uint8_t, uint8_t>{127, 127, 127}; },
+        [](const DirtBlock){ return std::tuple<uint8_t, uint8_t, uint8_t>{166, 81, 25}; },
+        [](const WoodBlock){ return std::tuple<uint8_t, uint8_t, uint8_t>{255, 169, 41}; },
+        [](const GrassBlock){ return std::tuple<uint8_t, uint8_t, uint8_t>{62, 191, 48}; },
+        [](const SandBlock){ return std::tuple<uint8_t, uint8_t, uint8_t>{245, 255, 105}; },
+        [](const WaterBlock){ return std::tuple<uint8_t, uint8_t, uint8_t>{87, 163, 222}; },
     }, b.block());
 }
 
