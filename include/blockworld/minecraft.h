@@ -11,6 +11,7 @@
 #include <cmath>
 #include <random>
 #include <algorithm>
+#include <functional>
 
 // from: https://en.cppreference.com/w/cpp/utility/variant/visit
 // helper type for the visitor #4
